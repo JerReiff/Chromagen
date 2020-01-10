@@ -6,7 +6,6 @@ Created on Fri Jan 10 17:01:12 2020
 """
 
 import numpy as np
-from scipy.io.wavfile import read as wavread
 from scipy.fftpack import fft
 
 """
@@ -26,13 +25,11 @@ def stft(data, windowlen, rate, windowtype = "Rectangular"):
         u = np.linspace(-.5,.5,windowlen)#in the center of the window
         w = (1+np.cos(np.pi*u))/2
     hop = windowlen//4 #hop is the number of samples to move forward before performing the next FFT
-    M = np.arange(0,(len(data)-windowlen)//hop-1, 1,dtype=int)
-    n = np.arange(windowlen)
+    M = np.arange(0,len(data)//hop-1, 1,dtype=int)
     K_arr = np.arange(0,windowlen//2, dtype = int)
     Chi = np.empty((len(M),len(K_arr)), dtype=complex)
     for m in M:
         x = data[m*hop:windowlen+m*hop]
-        print(x.shape)
         chi_m = fft(w*x)[:windowlen//2] #two notes here. First, we multiply by the window function before using fft.
                                         #second, for efficiency, we only calculate coefficients up to the nyquist frequency
         
