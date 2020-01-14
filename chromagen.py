@@ -8,6 +8,14 @@ Created on Fri Jan 10 17:01:12 2020
 import numpy as np
 from scipy.fftpack import fft
 
+
+"""
+min_frequencies computes the minimum frequency for each MIDI pitch bin.
+It is of length 129 to give the MIDI pitch 127 an upper bound
+"""
+min_frequencies = 2**((np.arange(0,129)-69.5)/12)*440
+
+
 """
 Create a Short-Time Fourier Transform of the given data.
 
@@ -18,6 +26,7 @@ windowtype -- "Rectangular" or "Hann" (controls shape of window function. Hann i
 
 returns -- Array of frequencies, array of times, Chi-value  (weight) from STFT
 """
+
 def stft(data, windowlen, rate, windowtype = "Rectangular"):
     if(windowtype == "Rectangular"):#This will manipulate the data at each slice to give different weights to values
         w = 1
@@ -36,5 +45,17 @@ def stft(data, windowlen, rate, windowtype = "Rectangular"):
         Chi[m,:] = chi_m
     F_arr = (K_arr*rate/windowlen)
     T_arr = (M*hop/rate)
-    return abs(F_arr), abs(T_arr), abs(Chi.T)
+    return abs(F_arr), abs(T_arr), abs(Chi)
+
+"""
+Create a chromagram of Fourier transform data
+
+F_arr -- frequencies represented by the Fourier transform data
+Chi -- Fourier transform data (can be STFT or FFT). Number of frequencies must be the length of F_arr.
+
+
+"""
+def chromagram(F_arr, Chi):
+    return
+
 
