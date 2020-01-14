@@ -22,15 +22,15 @@ def stft(data, windowlen, rate, windowtype = "Rectangular"):
     if(windowtype == "Rectangular"):#This will manipulate the data at each slice to give different weights to values
         w = 1
     if(windowtype == "Hann"): #Hann is a window which goes to zero at the ends of the window, putting higher weight on the data
-        u = np.linspace(-.5,.5,windowlen)#in the center of the window
+        u = np.linspace(-.5, .5, windowlen)#in the center of the window
         w = (1+np.cos(np.pi*u))/2
     hop = windowlen//4 #hop is the number of samples to move forward before performing the next FFT
-    M = np.arange(0,len(data)//hop-1, 1,dtype=int)
-    K_arr = np.arange(0,windowlen//2, dtype = int)
-    Chi = np.empty((len(M),len(K_arr)), dtype=complex)
+    M = np.arange(0, (len(data)-windowlen)//hop-1, dtype=int) #M as an array makes it easier to create T_arr below, rather than making M an int.
+    K_arr = np.arange(0, windowlen//2, dtype = int)
+    Chi = np.empty((len(M), len(K_arr)), dtype=complex)
     for m in M:
         x = data[m*hop:windowlen+m*hop]
-        chi_m = fft(w*x)[:windowlen//2] #two notes here. First, we multiply by the window function before using fft.
+        chi_m = (fft(w*x))[:windowlen//2] #two notes here. First, we multiply by the window function before using fft.
                                         #second, for efficiency, we only calculate coefficients up to the nyquist frequency
         
         Chi[m,:] = chi_m
