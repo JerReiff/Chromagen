@@ -45,17 +45,32 @@ def stft(data, windowlen, rate, windowtype = "Rectangular"):
         Chi[m,:] = chi_m
     F_arr = (K_arr*rate/windowlen)
     T_arr = (M*hop/rate)
-    return abs(F_arr), abs(T_arr), abs(Chi)
+    return abs(F_arr), abs(T_arr), abs(Chi.T)
 
 """
-Create a chromagram of Fourier transform data
+Create a spectrogram of Fourier transform data
 
 F_arr -- frequencies represented by the Fourier transform data
 Chi -- Fourier transform data (can be STFT or FFT). Number of frequencies must be the length of F_arr.
 
 
 """
-def chromagram(F_arr, Chi):
-    return
+def spectrogram(F_arr, Chi):
+    pitch = np.full(len(F_arr),-1) #this will tell us to which MIDI pitch bin each frequency belongs
+    i = 0
+    j = 0
+    while F_arr[i] < min_frequencies[0] and i<len(F_arr):
+        i+=1
+    while i<len(F_arr) and j<128:
+        if F_arr[i]>=min_frequencies[j] and F_arr[i]<min_frequencies[j]:
+            pitch[i] = j
+            i+=1
+        else:
+            j+=1
+    M_weights = np.zeros(np.shape(Chi)[1],128)
+    for i in range(len(F_arr)):
+        if F_arr[i]>0:
+            M_weights[:,F_arr[i]] += Chi[i,:].T
+    return M_weights
 
 
