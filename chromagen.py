@@ -8,14 +8,11 @@ Created on Fri Jan 10 17:01:12 2020
 import numpy as np
 from scipy.fftpack import fft
 
-
 """
 min_frequencies computes the minimum frequency for each MIDI pitch bin.
 It is of length 129 to give the MIDI pitch 127 an upper bound
 """
 min_frequencies = 2**((np.arange(0,129)-69.5)/12)*440
-
-
 """
 Create a Short-Time Fourier Transform of the given data.
 
@@ -46,31 +43,31 @@ def stft(data, windowlen, rate, windowtype = "Rectangular"):
     F_arr = (K_arr*rate/windowlen)
     T_arr = (M*hop/rate)
     return abs(F_arr), abs(T_arr), abs(Chi.T)
-
 """
 Create a spectrogram of Fourier transform data
 
 F_arr -- frequencies represented by the Fourier transform data
 Chi -- Fourier transform data (can be STFT or FFT). Number of frequencies must be the length of F_arr.
-
-
 """
 def spectrogram(F_arr, Chi):
-    pitch = np.full(len(F_arr),-1) #this will tell us to which MIDI pitch bin each frequency belongs
+    pitch = np.full((F_arr.shape[0]),-1) #this will tell us to which MIDI pitch bin each frequency belongs
     i = 0
     j = 0
-    while F_arr[i] < min_frequencies[0] and i<len(F_arr):
+    while (F_arr[i] < min_frequencies[0] and i<F_arr.shape[0]):
         i+=1
-    while i<len(F_arr) and j<128:
-        if F_arr[i]>=min_frequencies[j] and F_arr[i]<min_frequencies[j]:
+    while (i<F_arr.shape[0] and j<128):
+        if (F_arr[i]>=min_frequencies[j] and F_arr[i]<min_frequencies[j]):
             pitch[i] = j
             i+=1
         else:
-            j+=1
-    M_weights = np.zeros(np.shape(Chi)[1],128)
-    for i in range(len(F_arr)):
-        if F_arr[i]>0:
-            M_weights[:,F_arr[i]] += Chi[i,:].T
-    return M_weights
+            j=j+1
+    mweights = np.zeros((128,Chi.shape[1]))
+    for i in range(pitch.shape[0]):
+        if (pitch[i]>-1):
+            mweights[pitch[i],:] += Chi[i,:]
+    return(mweights)
+
+
+
 
 
