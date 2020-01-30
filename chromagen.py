@@ -33,21 +33,23 @@ def stft(data, windowlen, rate, windowtype = "Rectangular"):
     hop = windowlen//4 #hop is the number of samples to move forward before performing the next FFT
     M = np.arange(0, (len(data)-windowlen)//hop-1, dtype=int) #M as an array makes it easier to create T_arr below, rather than making M an int.
     K_arr = np.arange(0, windowlen//2, dtype = int)
-    Chi = np.empty((len(M), len(K_arr)), dtype=complex)
+    Chi = np.empty((len(K_arr), len(M)), dtype=complex)
     for m in M:
         x = data[m*hop:windowlen+m*hop]
         chi_m = (fft(w*x))[:windowlen//2] #two notes here. First, we multiply by the window function before using fft.
                                         #second, for efficiency, we only calculate coefficients up to the nyquist frequency
         
-        Chi[m,:] = chi_m
+        Chi[:,m] = chi_m
     F_arr = (K_arr*rate/windowlen)
     T_arr = (M*hop/rate)
-    return abs(F_arr), abs(T_arr), abs(Chi.T)
+    return abs(F_arr), abs(T_arr), abs(Chi)
 """
 Create a spectrogram of Fourier transform data
 
 F_arr -- frequencies represented by the Fourier transform data
-Chi -- Fourier transform data (can be STFT or FFT). Number of frequencies must be the length of F_arr.
+Chi -- Fourier transform data (can be STFT with Chi.shape[1]>1 or FFT with Chi.shape[1]==1). Number of frequencies must be the length of F_arr.
+
+Returns mweights - size is (128,Chi.shape[1])
 """
 def spectrogram(F_arr, Chi):
     pitch = np.full((F_arr.shape[0]),-1) #this will tell us to which MIDI pitch bin each frequency belongs
@@ -67,7 +69,26 @@ def spectrogram(F_arr, Chi):
             mweights[pitch[i],:] += Chi[i,:]
     return(mweights)
 
+"""
+Create a chromagram of STFT data, FFT data, or spectrogram data
+If using with spectrogram data, specify spec_data=None
 
+"""
+def chromagram(F_arr=None,Chi=None, spec_data=None):
+    
+    if spec_data is None:
+        if F_arr is None or Chi is None:
+            return None
+        return chromagram(spec_data = spectrogram(F_arr,Chi))
+    else:
+        cgm = np.zeros((12,spec_data.shape[1]))
+        for i in range(12):
+            j = i
+            while(j<128):
+                cgm[i,:] +=spec_data[j]
+                j+=12
+        return cgm
+        
 
 
 
