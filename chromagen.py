@@ -58,15 +58,15 @@ def spectrogram(F_arr, Chi):
     while (F_arr[i] < min_frequencies[0] and i<F_arr.shape[0]):
         i+=1
     while (i<F_arr.shape[0] and j<128):
-        if (F_arr[i]>=min_frequencies[j] and F_arr[i]<min_frequencies[j]):
+        if (F_arr[i]>=min_frequencies[j] and F_arr[i]<min_frequencies[j+1]):
             pitch[i] = j
             i+=1
         else:
             j=j+1
     mweights = np.zeros((128,Chi.shape[1]))
-    for i in range(pitch.shape[0]):
-        if (pitch[i]>-1):
-            mweights[pitch[i],:] += Chi[i,:]
+    for k in range(pitch.shape[0]):
+        if (pitch[k]>-1):
+            mweights[pitch[k],:] += Chi[k,:]
     return(mweights)
 
 """
