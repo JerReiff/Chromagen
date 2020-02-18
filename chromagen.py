@@ -8,6 +8,7 @@ Created on Fri Jan 10 17:01:12 2020
 import numpy as np
 from scipy.fftpack import fft
 
+
 """
 min_frequencies computes the minimum frequency for each MIDI pitch bin.
 It is of length 129 to give the MIDI pitch 127 an upper bound
@@ -82,11 +83,9 @@ def chromagram(F_arr=None,Chi=None, spec_data=None):
         return chromagram(spec_data = spectrogram(F_arr,Chi))
     else:
         cgm = np.zeros((12,spec_data.shape[1]))
-        for i in range(12):
-            j = i
-            while(j<128):
-                cgm[i,:] +=spec_data[j]
-                j+=12
+        chroma = np.linspace(0,128)%12
+        for i in range(128):
+            cgm[chroma[i],:] += spec_data[i] 
         return cgm
         
 
