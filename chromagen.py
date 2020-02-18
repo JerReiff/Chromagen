@@ -82,12 +82,17 @@ def chromagram(F_arr=None,Chi=None, spec_data=None):
             return None
         return chromagram(spec_data = spectrogram(F_arr,Chi))
     else:
-        cgm = np.zeros((12,spec_data.shape[1]))
-        chroma = np.linspace(0,128)%12
-        for i in range(128):
-            cgm[chroma[i],:] += spec_data[i] 
-        return cgm
-        
+        cgm = np.zeros((12,spec_data.shape[1]))#maps midi pitch to chroma
+        return np.roll(cgm(3,0)) #MIDI pitches start at C, but this returns an array with note A = index 0
+
+"""
+Get the weight of each chroma over an entire chromagram
+"""
+def chromaweights(chromagram):
+    #first normalize the chromagram at each time step
+    #Then, to get each chroma's weight, take sum of that chroma at all time steps and divide by total number of time steps
+    return np.sum(np.linalg.norm(chromagram,axis=0),axis=1)/np.shape(chromagram)[1]
+
 
 
 
