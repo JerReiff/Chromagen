@@ -15,14 +15,14 @@ It is of length 129 to give the MIDI pitch 127 an upper bound
 """
 min_frequencies = 2**((np.arange(0,129)-69.5)/12)*440
 """
-Create a Short-Time Fourier Transform of the given data.
+Create a real-valued Short-Time Fourier Transform of the given data.
 
 data -- data array for STFT
 windowlen -- sample size for each FFT
 rate -- sample rate of data
 windowtype -- "Rectangular" or "Hann" (controls shape of window function. Hann is recommended.) (default "Rectangular")
 
-returns -- Array of frequencies, array of times, Chi-value  (weight) from STFT
+returns -- Array of frequencies, array of times, Chi-value  (MAGNITUDE of coefficient) from STFT
 """
 
 def stft(data, windowlen, rate, windowtype = "Rectangular"):
@@ -43,7 +43,7 @@ def stft(data, windowlen, rate, windowtype = "Rectangular"):
         Chi[:,m] = chi_m
     F_arr = (K_arr*rate/windowlen)
     T_arr = (M*hop/rate)
-    return abs(F_arr), abs(T_arr), abs(Chi)
+    return abs(F_arr), abs(T_arr), abs(Chi) #abs() returns magnitude even when complex numbers are passed
 """
 Create a spectrogram of Fourier transform data
 
