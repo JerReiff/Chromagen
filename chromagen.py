@@ -43,7 +43,7 @@ def stft(data, windowlen, rate, windowtype = "Rectangular"):
         Chi[:,m] = chi_m
     F_arr = (K_arr*rate/windowlen)
     T_arr = (M*hop/rate)
-    return abs(F_arr), abs(T_arr), abs(Chi) #abs() returns magnitude even when complex numbers are passed
+    return F_arr, T_arr, Chi #returns complex values in Chi
 """
 Create a spectrogram of Fourier transform data
 
@@ -58,16 +58,16 @@ def spectrogram(F_arr, Chi):
     j = 0
     while (F_arr[i] < min_frequencies[0] and i<F_arr.shape[0]):
         i+=1
-    while (i<F_arr.shape[0] and j<128):
+    while (i<F_arr.shape[0] and j<128):#assign the pitches to MIDI notes
         if (F_arr[i]>=min_frequencies[j] and F_arr[i]<min_frequencies[j+1]):
             pitch[i] = j
             i+=1
         else:
             j=j+1
     mweights = np.zeros((128,Chi.shape[1]))
-    for k in range(pitch.shape[0]):
+    for k in range(pitch.shape[0]): #sum over the relevant frequencies to get MIDI weights
         if (pitch[k]>-1):
-            mweights[pitch[k],:] += Chi[k,:]
+            mweights[pitch[k],:] += np.abs(Chi[k,:]) #np.abs ensures we add the magnitude (Chi can be complex)
     return(mweights)
 
 """
