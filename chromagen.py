@@ -100,7 +100,7 @@ Get the weight of each chroma over an entire chromagram
 def chromaweights(chromagram):
     #first normalize the chromagram at each time step
     #Then, to get each chroma's weight, take sum of that chroma at all time steps and divide by total number of time steps
-    return np.sum(np.linalg.norm(chromagram,axis=0),axis=1)/np.shape(chromagram)[1]
+    return np.sum(chromagram/np.sum(chromagram, axis = 0),axis=1)/np.shape(chromagram)[1]
 
 
 
