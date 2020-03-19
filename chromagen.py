@@ -98,10 +98,11 @@ def chromagram(F_arr=None,Chi=None, spec_data=None):
 Get the weight of each chroma over an entire chromagram
 """
 def chromaweights(chromagram):
+   
+    sums = np.sum(chromagram, axis = 0)
+    sums[sums==0]=+ 1 #want to avoid a zero in the denominator.
     #first normalize the chromagram at each time step
     #Then, to get each chroma's weight, take sum of that chroma at all time steps and divide by total number of time 
-    sums = np.sum(chromagram, axis = 0)
-    sums[sums==0]=+ 1
     return np.sum(chromagram/sums, axis =1)/np.shape(chromagram)[1]
 
 
